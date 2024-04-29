@@ -3,7 +3,9 @@ import { useState,useEffect } from "react";
 const App = () => {
 
   const [message,setMessage]=useState(null);
-  const [value,setValue]=useState(null);
+  const [value,setValue]=useState("");
+  const [previouschats,setPreviouschats]=useState([]);
+  const [currenttitle,setCurrenttitle]=useState([]);
 const getMessages = async()=>{
   const options = {
     method: "POST",
@@ -24,6 +26,27 @@ const getMessages = async()=>{
     console.error(error);
   }
 }
+useEffect(()=>{
+  if (!currenttitle && value && message) {
+    setCurrenttitle(value);
+  }
+  if (currenttitle && value && message) {
+    setPreviouschats((prevChats) => [
+      ...prevChats,
+      {
+        title: currenttitle,
+        role: "user",
+        content: value,
+      },
+      {
+        title: currenttitle,
+        role: message.role,
+        content: message.content,
+      },
+    ]);
+  }
+
+},[message,currenttitle])
 
   return (
     <div className="app">
@@ -37,7 +60,7 @@ const getMessages = async()=>{
         </nav>
       </section>
       <section className="main">
-        <h1> VangariGPT</h1>
+        {!currenttitle && <h1> VangariGPT</h1>}
         <ul className="feed"></ul>
         <div className="bottom-section">
           <div className="input-container">
