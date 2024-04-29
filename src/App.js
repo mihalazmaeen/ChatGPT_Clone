@@ -1,6 +1,30 @@
-
+import { useState,useEffect } from "react";
 
 const App = () => {
+
+  const [message,setMessage]=useState(null);
+  const [value,setValue]=useState(null);
+const getMessages = async()=>{
+  const options = {
+    method: "POST",
+    body: JSON.stringify({
+      message:value
+    }),
+    headers:{
+      "Content-Type": "application/json"
+    }
+  }
+  try {
+    const response= await fetch('http://localhost:8000/completions',options);
+    const data=await response.json();
+    setMessage(data.choices[0].message)
+    console.log(data);
+
+  }catch(error){
+    console.error(error);
+  }
+}
+
   return (
     <div className="app">
       <section className="side-bar">
@@ -17,8 +41,8 @@ const App = () => {
         <ul className="feed"></ul>
         <div className="bottom-section">
           <div className="input-container">
-            <input />
-            <div id="submit">⇒</div>
+            <input value={value} onChange={(e)=>setValue(e.target.value)}/>
+            <div id="submit" onClick={getMessages}>⇒</div>
           </div>
           <p>
             VangariGPT is a clone version of ChatGPT. Version "Almost Vanga".
